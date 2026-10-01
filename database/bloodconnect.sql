@@ -59,3 +59,72 @@ CREATE TABLE `users` (
   KEY `idx_division_district` (`division`,`district`),
   KEY `idx_availability` (`availability`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- ---------------------------------------------------------
+-- Table: blood_requests
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS `blood_requests`;
+CREATE TABLE `blood_requests` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `request_code` VARCHAR(20) NOT NULL,
+  `seeker_id` INT UNSIGNED NOT NULL,
+  `blood_group` ENUM('A+','A-','B+','B-','AB+','AB-','O+','O-') NOT NULL,
+  `units_needed` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `patient_name` VARCHAR(120) NOT NULL,
+  `hospital_name` VARCHAR(150) NOT NULL,
+  `division` VARCHAR(50) NOT NULL,
+  `district` VARCHAR(50) NOT NULL,
+  `area` VARCHAR(80) DEFAULT NULL,
+  `required_date` DATE NOT NULL,
+  `required_time` TIME DEFAULT NULL,
+  `contact_number` VARCHAR(20) NOT NULL,
+  `additional_info` TEXT DEFAULT NULL,
+  `request_type` ENUM('normal','emergency') NOT NULL DEFAULT 'normal',
+  `status` ENUM('pending','searching','donor_found','fulfilled','cancelled','expired') NOT NULL DEFAULT 'pending',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_request_code` (`request_code`),
+  KEY `idx_blood_group` (`blood_group`),
+  KEY `idx_status` (`status`),
+  KEY `idx_type` (`request_type`),
+  KEY `idx_location` (`division`,`district`),
+  CONSTRAINT `fk_br_seeker` FOREIGN KEY (`seeker_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- Table: donor_requests (a request sent to a specific donor)
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS `donor_requests`;
+CREATE TABLE `donor_requests` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `blood_request_id` INT UNSIGNED NOT NULL,
+  `donor_id` INT UNSIGNED NOT NULL,
+  `match_score` TINYINT UNSIGNED DEFAULT NULL,
+  `status` ENUM('pending','accepted','declined','expired') NOT NULL DEFAULT 'pending',
+  `responded_at` TIMESTAMP NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_request_donor` (`blood_request_id`,`donor_id`),
+  KEY `idx_donor` (`donor_id`),
+  CONSTRAINT `fk_dr_request` FOREIGN KEY (`blood_request_id`) REFERENCES `blood_requests`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_dr_donor` FOREIGN KEY (`donor_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- Table: donation_history
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS `donation_history`;
+CREATE TABLE `donation_history` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `donor_id` INT UNSIGNED NOT NULL,
+  `donation_date` DATE NOT NULL,
+  `hospital_name` VARCHAR(150) NOT NULL,
+  `blood_group` ENUM('A+','A-','B+','B-','AB+','AB-','O+','O-') NOT NULL,
+  `units` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `notes` VARCHAR(255) DEFAULT NULL,
+  `status` ENUM('completed','pending','cancelled') NOT NULL DEFAULT 'completed',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_donor` (`donor_id`),
+  CONSTRAINT `fk_dh_donor` FOREIGN KEY (`donor_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
