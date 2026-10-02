@@ -297,3 +297,40 @@ VALUES
 ('Habibur Rahman','habib@example.com','01711000008','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','O+','Rajshahi','Rajshahi','Boalia','Male','1993-03-03','2026-04-22','available',1,1,10,'active'),
 ('Runa Laila','runa@example.com','01711000009','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','B-','Khulna','Khulna','Khalishpur','Female','1996-12-01',NULL,'available',1,1,1,'active'),
 ('Jahangir Alam','jahangir@example.com','01711000010','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','AB-','Sylhet','Sylhet','Zindabazar','Male','1991-07-07','2026-02-14','maybe',1,1,15,'active');
+
+-- Demo Seekers (password: Seeker@12345)
+INSERT INTO `users`
+(`full_name`,`email`,`phone`,`password_hash`,`role`,`blood_group`,`division`,`district`,`area`,`gender`,`is_verified`,`status`)
+VALUES
+('Anika Tabassum','anika@example.com','01822000001','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','seeker','O+','Dhaka','Dhaka','Mirpur','Female',0,'active'),
+('Shakil Ahmed','shakil@example.com','01822000002','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','seeker','B+','Dhaka','Dhaka','Banani','Male',0,'active');
+
+-- Hospitals / Blood Banks
+INSERT INTO `hospitals` (`name`,`type`,`address`,`division`,`district`,`phone`,`opening_hours`,`available_blood_groups`,`latitude`,`longitude`) VALUES
+('Dhaka Medical College Hospital','hospital','Secretariat Rd, Dhaka','Dhaka','Dhaka','01711223344','24 Hours','A+,A-,B+,B-,AB+,AB-,O+,O-',23.7256,90.3987),
+('Bangabandhu Sheikh Mujib Medical University (BSMMU)','hospital','Shahbag, Dhaka','Dhaka','Dhaka','01711223355','24 Hours','A+,A-,B+,B-,AB+,O+,O-',23.7383,90.3958),
+('Sandhani Blood Bank - Dhaka Central','blood_bank','Dhaka Medical College Campus, Dhaka','Dhaka','Dhaka','01711223366','9:00 AM - 9:00 PM','A+,A-,B+,B-,AB+,AB-,O+,O-',23.7264,90.3990),
+('Quantum Blood Bank','blood_bank','Dhanmondi, Dhaka','Dhaka','Dhaka','01711223377','8:00 AM - 10:00 PM','A+,B+,O+,O-',23.7461,90.3742),
+('Chattogram Medical College Hospital','hospital','Chattogram Medical College Rd, Chattogram','Chattogram','Chattogram','01811223344','24 Hours','A+,A-,B+,B-,AB+,AB-,O+,O-',22.3596,91.8317),
+('Rajshahi Medical College Hospital','hospital','Laxmipur, Rajshahi','Rajshahi','Rajshahi','01911223344','24 Hours','A+,B+,O+,O-',24.3745,88.6042),
+('Khulna Blood Collection Center','collection_center','KDA Ave, Khulna','Khulna','Khulna','01611223344','9:00 AM - 6:00 PM','A+,B+,O+,AB+',22.8456,89.5403);
+
+-- Blood bank inventory (sample)
+INSERT INTO `blood_banks` (`hospital_id`,`blood_group`,`units_available`) VALUES
+(1,'A+',12),(1,'O+',20),(1,'B+',15),(1,'O-',5),
+(3,'A+',8),(3,'O+',10),(3,'AB+',3),(3,'B-',2),
+(5,'O+',9),(5,'A+',6);
+
+-- Donation Camps
+INSERT INTO `donation_camps` (`camp_name`,`organization`,`camp_date`,`camp_time`,`location`,`division`,`district`,`description`,`contact`,`registration_info`,`created_by`) VALUES
+('World Blood Donor Day Camp','Sandhani','2026-06-14','9:00 AM - 4:00 PM','Central Shaheed Minar, Dhaka University','Dhaka','Dhaka','A city-wide voluntary donation camp marking World Blood Donor Day.','01711223366','Walk-in registration on site',1),
+('University Blood Drive','BSMMU Blood Bank Club','2026-10-20','10:00 AM - 3:00 PM','TSC, University of Dhaka','Dhaka','Dhaka','Student-organized blood donation drive.','01711223355','Register via campus notice board',1),
+('Chattogram Community Camp','Red Crescent Chattogram','2026-11-05','9:00 AM - 5:00 PM','Chattogram City Corporation Hall','Chattogram','Chattogram','Community blood donation and awareness camp.','01811223344','Call to pre-register',1);
+
+-- Blood Requests (normal + emergency demo data)
+INSERT INTO `blood_requests`
+(`request_code`,`seeker_id`,`blood_group`,`units_needed`,`patient_name`,`hospital_name`,`division`,`district`,`area`,`required_date`,`required_time`,`contact_number`,`additional_info`,`request_type`,`status`) VALUES
+('BC-2026-000101',11,'O+',2,'Mrs. Rahela Begum','Dhaka Medical College Hospital','Dhaka','Dhaka','Mirpur','2026-09-18','14:00:00','01822000001','Patient undergoing surgery, urgent need.','emergency','searching'),
+('BC-2026-000102',12,'B+',1,'Mr. Abdul Karim','Sandhani Blood Bank - Dhaka Central','Dhaka','Dhaka','Banani','2026-09-25',NULL,'01822000002','Scheduled procedure, planning ahead.','normal','pending'),
+('BC-2026-000103',11,'A-',3,'Baby Ayesha','BSMMU','Dhaka','Dhaka','Mirpur','2026-09-17','18:00:00','01822000001','Newborn requires transfusion urgently.','emergency','pending'),
+('BC-2026-000104',12,'O-',2,'Mr. Jashim Uddin','Chattogram Medical College Hospital','Chattogram','Chattogram','Agrabad','2026-09-30',NULL,'01822000002','Accident case, stable but needs reserve units.','normal','donor_found');
