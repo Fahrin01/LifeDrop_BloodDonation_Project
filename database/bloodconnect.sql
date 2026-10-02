@@ -145,3 +145,62 @@ CREATE TABLE `notifications` (
   KEY `idx_user_unread` (`user_id`,`is_read`),
   CONSTRAINT `fk_notif_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- Table: messages
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS `messages`;
+CREATE TABLE `messages` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `blood_request_id` INT UNSIGNED DEFAULT NULL,
+  `sender_id` INT UNSIGNED NOT NULL,
+  `receiver_id` INT UNSIGNED NOT NULL,
+  `message` TEXT NOT NULL,
+  `is_read` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_conversation` (`sender_id`,`receiver_id`),
+  KEY `idx_request` (`blood_request_id`),
+  CONSTRAINT `fk_msg_sender` FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_msg_receiver` FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_msg_request` FOREIGN KEY (`blood_request_id`) REFERENCES `blood_requests`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- Table: hospitals (hospitals & blood banks)
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS `hospitals`;
+CREATE TABLE `hospitals` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(150) NOT NULL,
+  `type` ENUM('hospital','blood_bank','collection_center') NOT NULL DEFAULT 'hospital',
+  `address` VARCHAR(255) NOT NULL,
+  `division` VARCHAR(50) NOT NULL,
+  `district` VARCHAR(50) NOT NULL,
+  `phone` VARCHAR(20) DEFAULT NULL,
+  `opening_hours` VARCHAR(100) DEFAULT NULL,
+  `available_blood_groups` VARCHAR(100) DEFAULT NULL,
+  `latitude` DECIMAL(10,7) DEFAULT NULL,
+  `longitude` DECIMAL(10,7) DEFAULT NULL,
+  `map_link` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_location` (`division`,`district`),
+  KEY `idx_type` (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- Table: blood_banks (kept separate for schema completeness
+-- - inventory-style records linked to a hospital/blood bank)
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS `blood_banks`;
+CREATE TABLE `blood_banks` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `hospital_id` INT UNSIGNED NOT NULL,
+  `blood_group` ENUM('A+','A-','B+','B-','AB+','AB-','O+','O-') NOT NULL,
+  `units_available` INT UNSIGNED NOT NULL DEFAULT 0,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_hospital_bg` (`hospital_id`,`blood_group`),
+  CONSTRAINT `fk_bb_hospital` FOREIGN KEY (`hospital_id`) REFERENCES `hospitals`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
