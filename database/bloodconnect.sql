@@ -334,3 +334,28 @@ INSERT INTO `blood_requests`
 ('BC-2026-000102',12,'B+',1,'Mr. Abdul Karim','Sandhani Blood Bank - Dhaka Central','Dhaka','Dhaka','Banani','2026-09-25',NULL,'01822000002','Scheduled procedure, planning ahead.','normal','pending'),
 ('BC-2026-000103',11,'A-',3,'Baby Ayesha','BSMMU','Dhaka','Dhaka','Mirpur','2026-09-17','18:00:00','01822000001','Newborn requires transfusion urgently.','emergency','pending'),
 ('BC-2026-000104',12,'O-',2,'Mr. Jashim Uddin','Chattogram Medical College Hospital','Chattogram','Chattogram','Agrabad','2026-09-30',NULL,'01822000002','Accident case, stable but needs reserve units.','normal','donor_found');
+
+-- Sample donor_requests (donor matched to a request)
+INSERT INTO `donor_requests` (`blood_request_id`,`donor_id`,`match_score`,`status`) VALUES
+(1,2,96,'pending'),
+(1,4,88,'pending'),
+(4,6,90,'accepted');
+
+-- Sample donation history
+INSERT INTO `donation_history` (`donor_id`,`donation_date`,`hospital_name`,`blood_group`,`units`,`notes`,`status`) VALUES
+(2,'2026-01-10','Dhaka Medical College Hospital','B+',1,'Routine voluntary donation','completed'),
+(2,'2026-03-15','Bangabandhu Sheikh Mujib Medical University (BSMMU)','B+',1,'Requested by patient family','completed'),
+(2,'2026-07-15','Dhaka Medical College Hospital','B+',1,'Emergency request fulfilled','completed'),
+(3,'2026-05-02','Sandhani Blood Bank - Dhaka Central','O+',1,'Voluntary camp donation','completed');
+
+-- Sample notifications
+INSERT INTO `notifications` (`user_id`,`type`,`title`,`message`,`link`,`is_read`) VALUES
+(2,'blood_request','New Emergency Blood Request','O+ blood urgently needed at Dhaka Medical College Hospital.','/donor/requests.php',0),
+(4,'blood_request','New Emergency Blood Request','O+ blood urgently needed at Dhaka Medical College Hospital.','/donor/requests.php',0),
+(11,'request_status','Request Update','Your request BC-2026-000101 is now being searched for matching donors.','/seeker/my-requests.php',0),
+(6,'request_accepted','Donation Confirmed','You accepted request BC-2026-000104. Please coordinate with the seeker.','/donor/requests.php',1);
+
+-- Sample messages
+INSERT INTO `messages` (`blood_request_id`,`sender_id`,`receiver_id`,`message`,`is_read`) VALUES
+(4,12,6,'Thank you so much for accepting the request. Can you come to the hospital today?',1),
+(4,6,12,'Yes, I can be there by 5 PM. Please share the exact ward number.',0);
