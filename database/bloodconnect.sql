@@ -251,3 +251,49 @@ CREATE TABLE `reports` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- =========================================================
+-- SAMPLE / DEMO DATA
+-- =========================================================
+
+-- Locations (subset of divisions/districts/areas for demo)
+INSERT INTO `locations` (`division`,`district`,`area`) VALUES
+('Dhaka','Dhaka','Mirpur'),
+('Dhaka','Dhaka','Uttara'),
+('Dhaka','Dhaka','Dhanmondi'),
+('Dhaka','Dhaka','Mohammadpur'),
+('Dhaka','Dhaka','Gulshan'),
+('Dhaka','Dhaka','Banani'),
+('Dhaka','Gazipur','Tongi'),
+('Dhaka','Narayanganj','Narayanganj Sadar'),
+('Chattogram','Chattogram','Agrabad'),
+('Chattogram','Chattogram','Panchlaish'),
+('Chattogram','Cox\'s Bazar','Cox\'s Bazar Sadar'),
+('Rajshahi','Rajshahi','Boalia'),
+('Rajshahi','Bogura','Bogura Sadar'),
+('Khulna','Khulna','Khalishpur'),
+('Khulna','Jessore','Jessore Sadar'),
+('Barishal','Barishal','Barishal Sadar'),
+('Sylhet','Sylhet','Zindabazar'),
+('Rangpur','Rangpur','Rangpur Sadar'),
+('Mymensingh','Mymensingh','Mymensingh Sadar');
+
+INSERT INTO `users`
+(`full_name`,`email`,`phone`,`password_hash`,`role`,`blood_group`,`division`,`district`,`area`,`gender`,`is_verified`,`status`)
+VALUES
+('BloodConnect Admin','admin@bloodconnect.test','01700000000','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','admin',NULL,'Dhaka','Dhaka','Mirpur','Other',1,'active');
+
+-- Demo Donors (password for all demo accounts: Donor@12345)
+INSERT INTO `users`
+(`full_name`,`email`,`phone`,`password_hash`,`role`,`blood_group`,`division`,`district`,`area`,`gender`,`date_of_birth`,`last_donation_date`,`availability`,`is_verified`,`is_donor_profile`,`total_donations`,`status`)
+VALUES
+('Rahim Ahmed','rahim@example.com','01711000001','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','B+','Dhaka','Dhaka','Mirpur','Male','1996-04-12','2026-07-15','available',1,1,8,'active'),
+('Karim Hossain','karim@example.com','01711000002','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','O+','Dhaka','Dhaka','Uttara','Male','1994-01-20','2026-05-02','available',1,1,12,'active'),
+('Farida Yasmin','farida@example.com','01711000003','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','A-','Dhaka','Dhaka','Dhanmondi','Female','1998-09-05','2026-03-11','maybe',1,1,4,'active'),
+('Nayeem Islam','nayeem@example.com','01711000004','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','O-','Dhaka','Dhaka','Mohammadpur','Male','1992-11-30',NULL,'available',0,1,0,'active'),
+('Sadia Akter','sadia@example.com','01711000005','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','AB+','Dhaka','Dhaka','Gulshan','Female','1999-06-18','2026-08-01','unavailable',1,1,3,'active'),
+('Tanvir Rahman','tanvir@example.com','01711000006','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','B+','Chattogram','Chattogram','Agrabad','Male','1995-02-25','2026-06-20','available',1,1,6,'active'),
+('Mitu Chowdhury','mitu@example.com','01711000007','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','A+','Chattogram','Chattogram','Panchlaish','Female','1997-08-14','2026-01-09','available',0,1,2,'active'),
+('Habibur Rahman','habib@example.com','01711000008','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','O+','Rajshahi','Rajshahi','Boalia','Male','1993-03-03','2026-04-22','available',1,1,10,'active'),
+('Runa Laila','runa@example.com','01711000009','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','B-','Khulna','Khulna','Khalishpur','Female','1996-12-01',NULL,'available',1,1,1,'active'),
+('Jahangir Alam','jahangir@example.com','01711000010','PLACEHOLDER_RUN_SEED_PASSWORDS_PHP','donor','AB-','Sylhet','Sylhet','Zindabazar','Male','1991-07-07','2026-02-14','maybe',1,1,15,'active');
