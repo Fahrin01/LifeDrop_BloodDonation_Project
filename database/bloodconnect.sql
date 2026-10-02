@@ -204,3 +204,50 @@ CREATE TABLE `blood_banks` (
   UNIQUE KEY `uq_hospital_bg` (`hospital_id`,`blood_group`),
   CONSTRAINT `fk_bb_hospital` FOREIGN KEY (`hospital_id`) REFERENCES `hospitals`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- Table: donation_camps
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS `donation_camps`;
+CREATE TABLE `donation_camps` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `camp_name` VARCHAR(150) NOT NULL,
+  `organization` VARCHAR(150) DEFAULT NULL,
+  `camp_date` DATE NOT NULL,
+  `camp_time` VARCHAR(60) DEFAULT NULL,
+  `location` VARCHAR(255) NOT NULL,
+  `division` VARCHAR(50) DEFAULT NULL,
+  `district` VARCHAR(50) DEFAULT NULL,
+  `description` TEXT DEFAULT NULL,
+  `contact` VARCHAR(50) DEFAULT NULL,
+  `registration_info` VARCHAR(255) DEFAULT NULL,
+  `created_by` INT UNSIGNED DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_camp_date` (`camp_date`),
+  CONSTRAINT `fk_camp_admin` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- Table: reports
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS `reports`;
+CREATE TABLE `reports` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `reporter_id` INT UNSIGNED NOT NULL,
+  `reported_user_id` INT UNSIGNED DEFAULT NULL,
+  `reported_request_id` INT UNSIGNED DEFAULT NULL,
+  `reason` ENUM('fake_request','fake_donor','spam','harassment','incorrect_info','suspicious_activity','other') NOT NULL,
+  `details` TEXT DEFAULT NULL,
+  `status` ENUM('pending','reviewed','resolved','rejected') NOT NULL DEFAULT 'pending',
+  `admin_notes` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_status` (`status`),
+  CONSTRAINT `fk_report_reporter` FOREIGN KEY (`reporter_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_report_user` FOREIGN KEY (`reported_user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_report_request` FOREIGN KEY (`reported_request_id`) REFERENCES `blood_requests`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+SET FOREIGN_KEY_CHECKS = 1;
