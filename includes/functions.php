@@ -172,3 +172,103 @@ function calculate_match_score(array $donor, array $request) {
 
     return min(100, $score);
 }
+
+
+/* -----------------------------------------------------------
+ * Notifications
+ * ----------------------------------------------------------- */
+
+function create_notification($userId, $type, $title, $message, $link = null) {
+    global $pdo;
+    $stmt = $pdo->prepare(
+        'INSERT INTO notifications (user_id, type, title, message, link) VALUES (:u, :t, :ti, :m, :l)'
+    );
+    $stmt->execute([
+        ':u' => $userId, ':t' => $type, ':ti' => $title, ':m' => $message, ':l' => $link,
+    ]);
+}
+
+function unread_notification_count($userId) {
+    global $pdo;
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM notifications WHERE user_id = :u AND is_read = 0');
+    $stmt->execute([':u' => $userId]);
+    return (int) $stmt->fetchColumn();
+}
+
+/* -----------------------------------------------------------
+ * File upload helper (profile photos)
+ * ----------------------------------------------------------- */
+
+function handle_image_upload($fileInputName, $prefix = 'photo') {
+    if (empty($_FILES[$fileInputName]) || $_FILES[$fileInputName]['error'] === UPLOAD_ERR_NO_FILE) {
+        return [null, null]; // no file uploaded, not an error
+    }
+
+    $file = $_FILES[$fileInputName];
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return [null, 'Upload failed. Please try again.'];
+    }
+
+    if ($file['size'] > MAX_UPLOAD_SIZE) {
+        return [null, 'Image is too large. Maximum size is 2MB.'];
+    }
+
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, ALLOWED_IMAGE_TYPES, true)) {
+        return [null, 'Only JPG, PNG, and WEBP images are allowed.'];
+    }
+
+    // Verify it is really an image
+    if (@getimagesize($file['tmp_name']) === false) {
+        return [null, 'The uploaded file is not a valid image.'];
+    }
+
+    if (!is_dir(UPLOAD_DIR)) {
+        mkdir(UPLOAD_DIR, 0755, true);
+    }
+
+    $filename = $prefix . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+    $destination = UPLOAD_DIR . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return [null, 'Could not save the uploaded file.'];
+    }
+
+    return [$filename, null];
+}
+
+/* -----------------------------------------------------------
+ * Misc display helpers
+ * ----------------------------------------------------------- */
+
+function time_ago($datetime) {
+    $timestamp = strtotime($datetime);
+    $diff = time() - $timestamp;
+    if ($diff < 60) return 'just now';
+    if ($diff < 3600) return floor($diff / 60) . 'm ago';
+    if ($diff < 86400) return floor($diff / 3600) . 'h ago';
+    if ($diff < 2592000) return floor($diff / 86400) . 'd ago';
+    return date('d M Y', $timestamp);
+}
+
+function status_badge_class($status) {
+    return [
+        'pending'      => 'badge-warning',
+        'searching'    => 'badge-info',
+        'donor_found'  => 'badge-primary',
+        'fulfilled'    => 'badge-success',
+        'cancelled'    => 'badge-danger',
+        'expired'      => 'badge-muted',
+        'accepted'     => 'badge-success',
+        'declined'     => 'badge-danger',
+        'available'    => 'badge-success',
+        'maybe'        => 'badge-warning',
+        'unavailable'  => 'badge-danger',
+    ][$status] ?? 'badge-muted';
+}
+
+function mask_phone($phone) {
+    if (strlen($phone) < 5) return $phone;
+    return substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 5) . substr($phone, -2);
+}
